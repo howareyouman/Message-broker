@@ -20,7 +20,7 @@ Main class - Server.
 
 Create Server class object. 
 
-You can connect to it by sockets. Send action (1-4) to it, that:
+You can connect to it by sockets. Send action (1-4) to it (by byte), than:
 
 1. Send name of the topic
 
