@@ -34,6 +34,6 @@ At the end send -1 to end the communication.
 
 ###Instalstion
 
-Run mvn clean install
+Compile in Intellij IDEA by Maven.
 
 ### Task for yandex internship. (Task 2 - Plans for future.txt)
