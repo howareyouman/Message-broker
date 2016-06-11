@@ -1,5 +1,7 @@
 import junit.framework.TestCase;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,8 +11,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+@FixMethodOrder(MethodSorters.JVM)
 public class TestServer extends TestCase{
-    private Server server;
+    private static Server server;
     private static boolean isStarted = false;
 
     @Override
@@ -26,7 +29,7 @@ public class TestServer extends TestCase{
         Socket socket = new Socket("localhost", 5678);
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataOutputStream.writeByte(1);
-        dataOutputStream.writeUTF("message");
+        dataOutputStream.writeUTF("topic");
         dataOutputStream.flush();
         dataOutputStream.writeByte(4);
         dataOutputStream.writeInt(1003);
@@ -51,24 +54,23 @@ public class TestServer extends TestCase{
         }
         input.close();
         ArrayList<String> correctList = new ArrayList<>();
-        correctList.add("message");
+        correctList.add("topic");
         assertEquals(correctList,listOfTopics);
     }
 
     @Test
     public void testSubscribe() throws IOException{
-
         Socket socket = new Socket("localhost", 5678);
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataOutputStream.writeByte(1);
-        dataOutputStream.writeUTF("message");
+        dataOutputStream.writeUTF("topic");
         dataOutputStream.flush();
         dataOutputStream.writeByte(3);
-        dataOutputStream.writeUTF("message");
+        dataOutputStream.writeUTF("topic");
         dataOutputStream.writeInt(1004);
         dataOutputStream.flush();
         dataOutputStream.writeByte(2);
-        dataOutputStream.writeUTF("message");
+        dataOutputStream.writeUTF("topic");
         dataOutputStream.writeUTF("TEXT");
         dataOutputStream.flush();
         dataOutputStream.writeByte(-1);
@@ -82,9 +84,44 @@ public class TestServer extends TestCase{
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             message = dataInputStream.readUTF();
             socket.close();
+            dataInputStream.close();
             getResult = false;
         }
+        input.close();
         String correctMessage = "TEXT";
+        assertEquals(message,correctMessage);
+    }
+
+    @Test
+    public void testFull() throws IOException{
+        Socket socket = new Socket("localhost", 5678);
+        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        dataOutputStream.writeByte(1);
+        dataOutputStream.writeUTF("newTopic");
+        dataOutputStream.flush();
+        dataOutputStream.writeByte(2);
+        dataOutputStream.writeUTF("newTopic");
+        dataOutputStream.writeUTF("TEXT");
+        dataOutputStream.flush();
+        dataOutputStream.writeByte(2);
+        dataOutputStream.writeUTF("topic");
+        dataOutputStream.writeUTF("NEW TEXT");
+        dataOutputStream.flush();
+        dataOutputStream.writeByte(-1);
+        dataOutputStream.flush();
+        ServerSocket input = new ServerSocket(1004,0, InetAddress.getByName("localhost"));
+        boolean getResult = true;
+        String message = null;
+        while (getResult){
+            socket = input.accept();
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            message = dataInputStream.readUTF();
+            dataInputStream.close();
+            socket.close();
+            getResult = false;
+        }
+        input.close();
+        String correctMessage = "NEW TEXT";
         assertEquals(message,correctMessage);
     }
 
