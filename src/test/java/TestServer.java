@@ -11,7 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-@FixMethodOrder(MethodSorters.JVM)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestServer extends TestCase{
     private static Server server;
     private static boolean isStarted = false;
@@ -25,7 +25,7 @@ public class TestServer extends TestCase{
     }
 
     @Test
-    public void testTopic() throws IOException{
+    public void test1Topic() throws IOException{
         Socket socket = new Socket("localhost", 5678);
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataOutputStream.writeByte(1);
@@ -59,12 +59,9 @@ public class TestServer extends TestCase{
     }
 
     @Test
-    public void testSubscribe() throws IOException{
+    public void test2Subscribe() throws IOException{
         Socket socket = new Socket("localhost", 5678);
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        dataOutputStream.writeByte(1);
-        dataOutputStream.writeUTF("topic");
-        dataOutputStream.flush();
         dataOutputStream.writeByte(3);
         dataOutputStream.writeUTF("topic");
         dataOutputStream.writeInt(1004);
@@ -93,7 +90,7 @@ public class TestServer extends TestCase{
     }
 
     @Test
-    public void testFull() throws IOException{
+    public void test3Full() throws IOException{
         Socket socket = new Socket("localhost", 5678);
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataOutputStream.writeByte(1);
